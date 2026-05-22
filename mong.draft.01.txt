@@ -1,0 +1,244 @@
+# The Mong Language 22/4/2026
+
+# language is loose type
+# 
+# type (data size) = default
+	none
+	byte / bool (8 bit) = 0
+	word        (16 bit) = 0
+	int / int32 (32 bit) = 0
+	uint32      (32 bit) = 0
+	float / float32 = (32 bit) = 0
+	float64     (64 bit) = 0
+	char (utf)  = "\0"
+	string      = ""
+	array<type> = []
+	function
+	
+# simd type (default like base type)
+	byte#2-4 
+	word#2-4
+	int#2-4
+	float#2-4
+	double#2-4
+	
+# comments
+# also comment
+// single line comment
+/* comment like c */
+
+var unknown 
+var hp: int = 123456
+var power: float64 = 13.43511
+var name: string = "Metro"
+var alive: bool = false
+var pos: float#3 = float#3( 0.1, 0.2, 0.3 )
+var rotation: float#4 = float#4( 0, 0, 0, 1 )
+var gender: char = "M"
+var status: string = none // cannot hold none = error 
+var gender // redefine error
+
+var hello = "hello"         // can use both " or '
+var world: string = 'world' 
+
+// string concatenate by +
+var hello_world = hello + world
+std.out( hello_world ) // print "Hello World"
+
+name = std.in()
+
+// multiline
+var summary = "my name is " + 
+	name + " are you good ? "
+	
+// string[index] return a char
+std.out( hello[0] ) // print first char
+
+var hello_world = $"\{hello} \{world}"
+std.out( hello_world )
+
+// vectors
+var vector_a = float#4( 1.0, 1, 2, 0 ) // auto for float#4
+var vector_b = float#4( 1.0, 0, 1.2, 0.0 ) // auto for float#4
+
+pos[0] // 0.1
+rotation[4] // access error
+var vector_sum = vector_a + vector_b // add/sub vector
+pos = pos * 1.2 // scalar multiple 
+
+// array define
+var friends: array<string> = ["a", "b", "c"] // full form
+var toys = ["t", "x", "z"] // auto type to array<string>
+var ages = [1, 2, 3] // auto type to array<int>
+var weights = [55.5, 66, 67.2] // auto type to array<float>
+
+var image: array<int,int> = [[0, 0], [1, 0], [1, 0]
+
+friends.add("d") // add element
+friends.remove("b") // remove element
+friends.count() // 3
+friends[0] // access index start at 0 to count -1
+friends.contains(0) == true // check element exists
+friends.range(1, 2) // get new array[1]..array[2]
+
+
+var classroom: array<string>
+classroom.from( friends ) // add all data from another array
+
+classroom.sort() // sort element
+
+// map (hashmap)
+
+var players: map<int,string> = [ 1 = "p1", 2 = "p2", 3 = "p3" ]
+var callsigns: map<string,string> = [ "a" = "A1", "b" = "B2", "c" = "C3" ]
+
+players[1] == "p1"
+players.set(4, "p4") // set key value element
+players.remove(1)    // remove element by key
+players.contains(2) // check for key exists 
+
+players.keys // return array<int> of key
+players.values // return array<string> of value
+
+// struct
+group Name {
+		member1: type,
+		member2: type,
+		...
+}
+
+
+group Family {
+	firstName: string,
+	lastName: string,
+	age: int,
+	height: float32
+}
+
+var family: Family = Family( firstName = "John", lastName = "Doh", age = 30, height = 1.6 )
+var secondFam: Family
+
+family.firstName // access member = "John"
+secondFam = family // clone data into
+
+
+
+// buildin functions
+type(unknown) == "none"
+type(pos)  == "float#3"
+type(rotation)  == "float#4"
+type(hello[0])  == "char"
+type(hello)  == "string"
+
+count(hello)  == 5
+count(friends)  == 3
+count(pos)  == 3
+count(rotation)  == 4
+
+// size of real data
+size(hello)  == 5    
+size(friends)  == 3
+size(pos)  == 12
+size(rotation)  == 16
+
+
+# @ for function define
+@ function_name ( param1: type, param2: type ): type1, type2, type3 {
+	statement
+	statement; statement; statement;
+	out return1, return2, return3
+}
+
+var r1, r2, r3 = function_name() // return all out
+var s1, s2, = function_name() // it will return first to s1 and s2
+var t1 = function_name() // it will return the first only
+
+@ DoPower(x: float, y: float64): float64 {
+	out math.pow(x, y);
+}
+
+@ IsChildAge(age: int): bool {
+	
+	out age < 20
+}
+
+var checkAgeFunction: Function = IsChildAge;   // assign to variable
+
+var result = checkAgeFunction(12)
+std.out( result )
+
+type(checkAgeFunction) == "function" 
+
+# conditional
+if (conditional) statements else else_statements;
+
+if (conditional) 
+	statements;
+else 
+	statements;
+
+# when (switch statement)
+when(conditional)  // switch
+	value { statements }
+	value { statements; statements; }
+	value { statements; statements }
+
+
+when (value) {
+    1 { std.out("one") }
+    2 { std.out("two") }
+    3 { std.out("three") }
+    else { std.out("other") }
+}
+
+# while loop
+
+while ( true_condition ) // compare true first then run statements
+	statements;
+
+while {                   // compare true last then loop again
+	statements; statements; 
+} (true_condition )
+
+
+	
+while( true_condition ) 
+{ 
+	statements; statements; 
+}
+
+while 
+{ 
+	statements; statements; 
+} ( true_condition ) ;
+
+# repeat loop
+repeat value { statements; } // repeat value times, error if x not int type
+
+// repeat example
+var times = 10
+repeat times { statements; }
+
+// repeat by start to end
+repeat counter = start to end { statements; }
+
+repeat value = 0 to times  { statements; }
+
+repeat value = 1 to 10  { statements; } // auto increase 
+
+repeat value = 10 to 1  { statements; } // auto decrease
+
+repeat value = arrays { statements } // iterate all values in array
+
+						  
+# operator
+Unary: !, -                  
+Multiply/divide/mod: *, /, %
+Add/subtract: +, -          
+Comparison: <, <=, >, >=
+Equality: ==, !=            
+Logical and: &&             
+Logical or: ||              
+Assignment: =
+
+
