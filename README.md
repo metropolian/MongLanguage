@@ -45,6 +45,7 @@ var pos: float#3 = hp // error
 | `word` | 16-bit | `0` |
 | `int` / `int32` | 32-bit | `0` |
 | `uint32` | 32-bit | `0` |
+| `uint64` | 64-bit | `0` |
 | `float` / `float32` | 32-bit | `0` |
 | `float64` | 64-bit | `0` |
 | `char` | UTF character | `'\0'` |
@@ -55,7 +56,7 @@ var pos: float#3 = hp // error
 
 ## `none` rules
 
-`none` ค่า NULL นั้นละ
+`none` ค่า NULL นั้นละ เหมือนกล่องเปล่าไม่มีอะไร
 
 Recommended rules:
 
@@ -118,6 +119,13 @@ var power: float64 = 13.43511
 var name: string = "Metro"
 var alive: bool = false
 var gender: char = 'M'
+```
+
+multiple var:
+
+```mong
+var mhp = 100, msp = 50, my_name = "Metro"
+var xx: int = 1, yy: float = 2.5, zz: string = "hi"
 ```
 
 ### Strings
@@ -331,6 +339,19 @@ repeat value = 1 to 10 { statements }
 repeat value = 10 to 1 { statements }
 repeat value = arrays { statements }
 ```
+## Break Loop
+
+```mong
+repeat 10 { 
+	break;
+}
+
+while {
+    break;
+} ( true )
+```
+
+
 
 ## Operators
 
@@ -338,12 +359,101 @@ repeat value = arrays { statements }
 
 1. Unary: `!`, `-`
 2. Multiply/divide/mod: `*`, `/`, `%`
-3. Add/subtract: `+`, `-`
+3. Add/subtract: `+`, `-`, `++`, `--`,
 4. Comparison: `<`, `<=`, `>`, `>=`
 5. Equality: `==`, `!=`
-6. Logical and: `&&`
-7. Logical or: `||`
+6. Logical and: `&&` `and` `และ`
+7. Logical or: `||` `or` `หรือ`
 8. Assignment: `=`
+
+## Boolean Operators
+1. Logical and: `&&` `and` `และ`
+2. Logical or: `||` `or` `หรือ`
+
+## Thai Language supports
+
+var = var / ตัวแปร
+if = if / ถ้า
+else = else / มิฉะนั้น
+while = while / ทำ
+repeat = repeat / ซ้ำ
+group = group / กลุ่ม
+when = when / เมื่อ
+out = out / ออก
+none = none / ว่าง
+true = true / จริง
+false = false / เท็จ
+break = break / หยุด
+
+
+## Truthiness:
+
+ความจริงมีเพียงหนึ่งเดียว
+
+- bool: true = truthy, false = falsey
+- int/byte: 0 = falsey, non-zero = truthy
+- float: 0.0 = falsey, non-zero = truthy
+- char: '\0' = falsey, other chars = truthy
+- string: "" = falsey, otherwise truthy
+- vector: all components zero = falsey, otherwise truthy
+- array: empty = falsey, otherwise truthy
+- map: empty = falsey, otherwise truthy
+- none: falsey
+
+## Error handling
+
+Mong การทำงานจะขึ้นกับสโคปของโปรแกรม
+
+`trigger(error)` จะสร้าง error ส่งไปในสโคป และ function
+หากมี `catch` จะดักจับ error นั้นในสโคปทันที จะเขียนบนหรือล่างก็ได้ 
+การเขียน catch อย่างเดียว ไม่ต้องมี try ... นะ
+
+```mong
+catch error {
+    statements
+}
+```
+
+### Catch with "if"
+
+```mong
+catch error if (error == "IOError") {
+    statements
+}
+```
+
+### Catch with "when"
+
+```mong
+catch error when (error) {
+    "IOError" { statements }
+    "GPError" { statements }
+    else { statements }
+}
+```
+
+### Error rules
+
+- `trigger(error)` จะส่งค่าไปหา `catch` ที่ใกล้สุดก่อน
+- `catch` เขียนอยู่บนหรือล่างก็ได้ในสโคปน้นๆ
+- ถ้าในสโคปนั้นไม่มี ก็จะขึ้นไปหาสโคปก่อนหน้านี้
+- The error value จะเป็นอะไรก็ค่อยว่ากันอีกที
+
+Example:
+
+```mong
+catch error when (error) {
+    "IOError" {
+        std.out("file error")
+    }
+    "GPError" {
+        std.out("gpu error")
+    }
+    else {
+        std.out("unknown error")
+    }
+}
+```
 
 ## Example program
 
